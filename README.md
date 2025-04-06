@@ -1,3 +1,6 @@
+Tentu! Berikut ini adalah **full content dari file `README.md`** yang bisa langsung kamu gunakan dalam proyekmu:
+
+```markdown
 # 📊 Crypto Scalping Simulator App
 
 A real-time crypto signal detection and simulation app built in Kotlin for Android. This app helps users monitor crypto markets, detect strong trading signals based on technical indicators, and simulate buy/sell decisions with auto-exit strategies.
@@ -52,7 +55,7 @@ A real-time crypto signal detection and simulation app built in Kotlin for Andro
 
 ## 📸 Screenshot
 
-*(Tambahkan screenshot aplikasi jika ada untuk tampilan MainActivity, notifikasi sinyal, dll.)*
+> *(You can insert screenshots of your MainActivity UI, signal notifications, and simulation result logs here to make the README more visual.)*
 
 ---
 
@@ -61,3 +64,56 @@ A real-time crypto signal detection and simulation app built in Kotlin for Andro
 1. Clone this repo:
    ```bash
    git clone https://github.com/yourusername/trading-simulator-app.git
+   ```
+2. Open in **Android Studio**
+3. Run on a real device or emulator (minimum SDK: 26)
+4. Allow notification permission on Android 13+
+
+---
+
+## 📦 Dependencies
+
+- Kotlin Coroutines
+- Android Foreground Services
+- Binance Public API (REST via HTTP)
+- LiveData, BroadcastReceiver, NotificationManager
+
+---
+
+## 🧠 Signal Explanation
+
+| Signal Type     | Meaning                                             | Suggestion               |
+|-----------------|-----------------------------------------------------|--------------------------|
+| BUY STRONG      | All indicators align positively                     | Consider buying          |
+| SELL STRONG     | Strong bearish trend confirmed                      | Consider selling         |
+| SELL MOMENTUM   | Momentum shift detected to downside                 | Monitor closely          |
+
+---
+
+## ✅ TODO / Improvements
+
+- [ ] Add real-time chart preview
+- [ ] Save signal logs to local database
+- [ ] Export simulation results
+- [ ] Add user-configurable TP/SL settings
+
+---
+
+## 🤝 Contributing
+
+Pull requests and suggestions are welcome! Feel free to fork this project and submit improvements.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
+
+---
+
+## 👤 Author
+
+Developed by Dzikri — Android & Python Developer  
+
+---
+```
