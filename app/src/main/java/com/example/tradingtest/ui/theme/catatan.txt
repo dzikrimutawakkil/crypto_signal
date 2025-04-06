@@ -1,0 +1,80 @@
+Berikut adalah **penjelasan/kesimpulan** dari masing-masing kategori sinyal pada strategi scalping tersebut:
+
+---
+
+### 🔼 **BUY STRONG (SCALP)**
+📌 **Kondisi:**
+- Terjadi **EMA cross up** (EMA 9 memotong ke atas EMA 21)
+- **RSI** berada dalam zona bullish moderat (**50–70**)
+- Ada **volatilitas tinggi (ATR)** *atau* **volume transaksi meningkat signifikan**
+
+✅ **Kesimpulan:**
+Pasar menunjukkan momentum naik yang cukup kuat dan konsisten. Ini sinyal terbaik untuk entry posisi beli cepat.
+
+---
+
+### 🟢 **BUY WEAK (SCALP)**
+📌 **Kondisi:**
+- EMA cross up
+- RSI dalam zona netral-bullish ringan (**45–75**)
+- Volume meningkat, namun tidak terlalu ekstrem
+- Volatilitas boleh rendah
+
+🟡 **Kesimpulan:**
+Pasar mulai menunjukkan potensi naik, tapi belum cukup meyakinkan. Cocok untuk entry ringan atau pemantauan lebih lanjut.
+
+---
+
+### 🚀 **BUY MOMENTUM (SCALP)**
+📌 **Kondisi:**
+- **RSI sangat tinggi** (> 75)
+- **Volume sangat tinggi** (> 2× rata-rata)
+
+🔥 **Kesimpulan:**
+Terjadi breakout naik secara cepat — momentum kuat. Cocok untuk scalping sangat cepat (masuk dan keluar dalam waktu singkat).
+
+---
+
+### 🔽 **SELL STRONG (SCALP)**
+📌 **Kondisi:**
+- EMA cross down (EMA 9 turun memotong EMA 21)
+- RSI di zona bearish moderat (**30–50**)
+- Volatilitas tinggi *atau* volume naik drastis
+
+✅ **Kesimpulan:**
+Pasar mulai turun tajam, sinyal kuat untuk posisi jual cepat.
+
+---
+
+### 🔻 **SELL WEAK (SCALP)**
+📌 **Kondisi:**
+- EMA cross down
+- RSI < 55 (awal pelemahan)
+- Volume meningkat, tapi volatilitas bisa rendah
+
+🟡 **Kesimpulan:**
+Tanda-tanda awal penurunan. Cocok untuk mulai pantau atau jual bertahap jika sebelumnya sempat beli.
+
+---
+
+### 💥 **SELL MOMENTUM (SCALP)**
+📌 **Kondisi:**
+- RSI sangat rendah (< 25)
+- Volume melonjak tajam
+
+🔥 **Kesimpulan:**
+Breakdown tajam sedang berlangsung. Cocok untuk scalping jual sangat cepat atau stop loss agresif.
+
+---
+
+### ⚖️ **NEUTRAL**
+📌 **Kondisi:**
+- Tidak ada sinyal kuat
+- Market sideways atau sinyal saling bertentangan
+
+🧘 **Kesimpulan:**
+Tunggu konfirmasi. Hindari entry karena belum ada arah jelas.
+
+---
+
+Kalau kamu mau versi ini ditampilkan langsung di UI aplikasi, atau ingin terjemahan bahasa Indonesia full, tinggal bilang ya!
