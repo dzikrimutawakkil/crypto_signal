@@ -1,6 +1,3 @@
-Tentu! Berikut ini adalah **full content dari file `README.md`** yang bisa langsung kamu gunakan dalam proyekmu:
-
-```markdown
 # 📊 Crypto Scalping Simulator App
 
 A real-time crypto signal detection and simulation app built in Kotlin for Android. This app helps users monitor crypto markets, detect strong trading signals based on technical indicators, and simulate buy/sell decisions with auto-exit strategies.
@@ -113,7 +110,6 @@ This project is open-source and available under the MIT License.
 
 ## 👤 Author
 
-Developed by Dzikri — Android & Python Developer  
+Developed by DzikriMutawakkil — Android & Python Developer  
 
 ---
-```
