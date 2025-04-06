@@ -1,4 +1,4 @@
-package com.example.tradingtest
+package com.example.tradingtest.dashboard
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -11,12 +11,10 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.ta4j.core.Bar
 
 class MarketScannerService : Service() {
 
@@ -84,7 +82,7 @@ class MarketScannerService : Service() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Intent untuk membuka MainActivity saat notifikasi diklik
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, DashboardActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = PendingIntent.getActivity(

@@ -1,12 +1,14 @@
-package com.example.tradingtest
+package com.example.tradingtest.dashboard
 
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.*
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import com.example.tradingtest.R
 import kotlinx.coroutines.*
 import org.ta4j.core.Bar
 
@@ -24,9 +26,19 @@ class CryptoSignalService : Service() {
     private var buyPrice: Double = 0.0
     private var buyTimestamp: Long = 0L
 
+    private lateinit var prefs: SharedPreferences
+    private var signalMode = "Konservatif"
+    private var notificationType = "Hanya Strong"
+    private var rsiThreshold = 20
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         selectedSymbol = intent?.getStringExtra("symbol") ?: "BTCUSDT"
         selectedInterval = intent?.getStringExtra("interval") ?: "5m"
+
+        prefs = getSharedPreferences("SIGNAL_SETTING", Context.MODE_PRIVATE)
+        signalMode = prefs.getString("SIGNAL_MODE", "Konservatif") ?: "Konservatif"
+        notificationType = prefs.getString("SIGNAL_TYPE", "Hanya Strong") ?: "Hanya Strong"
+        rsiThreshold = prefs.getInt("RSI_Threshold_Custom", 20)
 
         when (intent?.action) {
             "SIMULATED_BUY" -> {
@@ -60,7 +72,6 @@ class CryptoSignalService : Service() {
         }
     }
 
-
     private fun simulateSell() {
         CoroutineScope(Dispatchers.IO).launch {
             if (!isSimulating) return@launch
@@ -70,7 +81,6 @@ class CryptoSignalService : Service() {
             Log.d("Simulasi", "Jual (Realtime) di harga $currentPrice. Hasil: ${"%.2f".format(changePercent)}%")
         }
     }
-
 
     private fun startSignalLoop() {
         signalRunnable = object : Runnable {
@@ -90,23 +100,33 @@ class CryptoSignalService : Service() {
     private suspend fun checkForSignal(): List<Bar> {
         val data = CryptoDataFetcher.fetchData(selectedSymbol, selectedInterval)
         if (data.isNotEmpty()) {
-            val signal = IndicatorAnalyzer.analyze(data)
+            val signal = IndicatorAnalyzer.analyze(this, data)
 
-            showSignalNotification(signal)
-
-            var changePercent: Double? = null
-            if (buyPrice != 0.0) {
-                val currentPrice = data.lastOrNull()?.closePrice?.doubleValue() ?: 0.0
-                changePercent = ((currentPrice - buyPrice) / buyPrice) * 100
+            if (shouldNotify(signal.signal)) {
+                showSignalNotification(signal)
             }
 
-            broadcastIndicators(signal, changePercent)
+            val changePercent = if (buyPrice != 0.0) {
+                val currentPrice = data.lastOrNull()?.closePrice?.doubleValue() ?: 0.0
+                ((currentPrice - buyPrice) / buyPrice) * 100
+            } else null
 
-            Log.d("Signal", "Signal Detected: $signal")
+            broadcastIndicators(signal, changePercent)
+            Log.d("Signal", """
+                Signal Detected:
+                 - Signal        : ${signal.signal}
+                 - Explanation   : ${signal.explanation}
+                 - Action        : ${signal.action}
+                 - RSI           : ${"%.2f".format(signal.rsi)}
+                 - MACD          : ${"%.4f".format(signal.macd)}
+                 - Volume Anomaly: ${"%.4f".format(signal.volumeAnomaly)}
+                 - Market Range  : ${signal.marketRange}
+                 - Notify?       : ${signal.shouldNotify}
+            """.trimIndent())
+
         }
         return data
     }
-
 
     private suspend fun checkReminders(data: List<Bar>) {
         if (!isSimulating) return
@@ -133,17 +153,37 @@ class CryptoSignalService : Service() {
             else -> null
         }
 
+        val intent = Intent(this, DashboardActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         message?.let {
             val notification = NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Simulasi Beli: $selectedSymbol")
                 .setContentText(it)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent) // 👈 di sini kuncinya
+                .setAutoCancel(true) // notifikasi hilang saat diklik
                 .build()
             notificationManager.notify(2002, notification)
         }
     }
 
+    private fun shouldNotify(signal: String): Boolean {
+        return when (notificationType) {
+            "Hanya Strong" -> signal in listOf("BUY STRONG", "SELL STRONG", "SELL MOMENTUM")
+            "Prioritas Beli" -> signal.contains("BUY")
+            "Prioritas Tambah" -> signal.contains("BUY") || signal.contains("HOLD")
+            else -> true // Semua
+        }
+    }
 
     private fun showSignalNotification(signal: SignalResult) {
         val channelId = "crypto_signal_channel"
@@ -155,11 +195,20 @@ class CryptoSignalService : Service() {
                 "Crypto Signals",
                 NotificationManager.IMPORTANCE_HIGH
             )
-            getSystemService(NotificationManager::class.java)
-                .createNotificationChannel(channel)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
 
         val description = getSignalDescription(signal)
+
+        val intent = Intent(this, DashboardActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -167,6 +216,8 @@ class CryptoSignalService : Service() {
             .setContentText(description)
             .setStyle(NotificationCompat.BigTextStyle().bigText(description))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent) // 👈 di sini kuncinya
+            .setAutoCancel(true) // notifikasi hilang saat diklik
             .build()
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -201,14 +252,19 @@ class CryptoSignalService : Service() {
         return "🔔 Aksi: $action - $explanation"
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        isRunning = false
-        handler.removeCallbacks(signalRunnable)
-        Log.d("Service", "CryptoSignalService stopped.")
-    }
-
     private fun broadcastIndicators(signal: SignalResult, changePercent: Double? = null) {
+        val prefs = getSharedPreferences("INDICATOR_DATA", Context.MODE_PRIVATE)
+        prefs.edit().apply {
+            putString("rsi", signal.rsi?.toString() ?: "-")
+            putString("action", signal.action)
+            putString("detail", signal.explanation)
+            putString("macd", signal.macd?.toString() ?: "-")
+            putString("volumeAnomaly", signal.volumeAnomaly?.toString() ?: "-")
+            putString("marketRange", signal.marketRange ?: "-")
+            putString("simulationResult", changePercent?.let { "${"%.2f".format(it)}%" } ?: "-")
+            apply()
+        }
+
         val intent = Intent("com.example.tradingtest.INDICATOR_UPDATE").apply {
             putExtra("rsi", signal.rsi?.toString() ?: "-")
             putExtra("action", signal.action)
@@ -219,7 +275,15 @@ class CryptoSignalService : Service() {
             putExtra("simulationResult", changePercent?.let { "${"%.2f".format(it)}%" } ?: "-")
             setPackage("com.example.tradingtest")
         }
-        sendBroadcast(intent) // Native Android broadcast
+        sendBroadcast(intent)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isRunning = false
+        handler.removeCallbacks(signalRunnable)
+        Log.d("Service", "CryptoSignalService stopped.")
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
